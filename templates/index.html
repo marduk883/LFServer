@@ -1,0 +1,15 @@
+{% extends "main.html" %}
+{% block title %} Home {% endblock title %}
+{% block body %}
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="jumbotron text-center">
+        {% include "categorys.html" %}
+        {% if system_username != "Unknown Username" %}
+        <h1 class="display-3">{{system_username}}LFS</h1>
+        {% else %}
+        <h1 class="display-3">Local Sunucu</h1>
+        {% endif %}
+        <a href="/login" class="btn btn-primary btn-lg" style="background-color: #6c63ff; border-color: #6c63ff;">Open Now</a>
+    </div>
+</div>
+{% endblock body %}

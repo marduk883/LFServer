@@ -1,0 +1,238 @@
+{% extends "main.html" %}
+{% block title %}Server Settings{% endblock %}
+{% block body %}
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f8f9fa;">
+    <div style="text-align: center;">
+        <h1>Network Scanner</h1>
+        <form method="POST" id="scanForm">
+            <div class="form-group">
+                <label for="scan_type">Scan Type:</label>
+                <select name="scan_type" id="scan_type">
+                    <option value="quick">Quick Scan</option>
+                    <option value="deep">Deep Scan</option>
+                </select>
+            </div>
+            <button type="submit" class="button" id="startScanButton">Start Scan</button>
+        </form>
+
+        {% if scan_results %}
+            <div id="scanResultsModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-button" onclick="closeScanResults()">×</span>
+                    <h2 id="modalTitle">
+                        {% if scan_type == 'quick' %}
+                            Quick Scan Results
+                        {% else %}
+                            Deep Scan Results
+                        {% endif %}
+                    </h2>
+                    <div id="scanResultsBody">
+                        <ul style="list-style: none; padding: 0;">
+                            {% for device in scan_results %}
+                                <li style="margin-bottom: 10px;">
+                                    {{ device.ip }}
+                                    {% if device.ip == host_ip %}
+                                        (Host)
+                                    {% else %}
+                                        <button class="info-button" onclick="showDeviceInfo('{{ device.ip }}', '{{ device.name }}', '{{ device.mac }}', '{{ device.vendor }}', '{{ device.category }}', '{{ device.os }}', '{{ device.ports }}')">
+                                            ?</button>
+                                        {% if device.mac in blocked_mac_addresses %}
+                                            <button class="block-button" onclick="unblockDevice('{{ device.mac }}')">Unblock This Device</button>
+                                        {% else %}
+                                            <button class="block-button" onclick="blockDevice('{{ device.mac }}')">Block This Device</button>
+                                        {% endif %}
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="deviceInfoModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-button" onclick="closeDeviceInfo()">×</span>
+                    <h2 id="modalTitle">Device Info</h2>
+                    <div id="modalBody"></div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .form-group input, .form-group select {
+        width: 300px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        box-sizing: border-box;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+        outline: none;
+        border-color: #6c63ff;
+    }
+
+    .button {
+        background-color: #6c63ff;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+        background-color: #5650c7;
+    }
+
+    .info-button {
+        background-color: #6c63ff;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        font-size: 14px;
+        cursor: pointer;
+        margin-left: 5px;
+    }
+
+    .block-button {
+        background-color: #6c63ff;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 8px 13px; /* Boyutu küçültülmüş padding değerleri */
+        cursor: pointer;
+        font-size: 13px; /* Boyutu küçültülmüş font boyutu */
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+        margin-left: 5px;
+    }
+
+    .block-button:hover {
+        background-color: #5650c7;
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: left;
+        width: 80%;
+        max-width: 600px;
+    }
+
+    .close-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+</style>
+
+<script>
+    function closeScanResults() {
+        document.getElementById('scanResultsModal').style.display = "none";
+    }
+
+    function showDeviceInfo(ip, name, mac, vendor, category, os, ports) {
+        var modalBody = document.getElementById('modalBody');
+        modalBody.innerHTML = `
+            <strong>IP:</strong> ${ip}<br>
+            <strong>Name:</strong> ${name}<br>
+            <strong>MAC:</strong> ${mac}<br>
+            <strong>Vendor:</strong> ${vendor}<br>
+            <strong>Category:</strong> ${category}<br>
+            <strong>OS:</strong> ${os}<br>
+            <strong>Open Ports:</strong> ${ports}
+        `;
+        document.getElementById('deviceInfoModal').style.display = "block";
+    }
+
+    function closeDeviceInfo() {
+        document.getElementById('deviceInfoModal').style.display = "none";
+    }
+
+    function blockDevice(mac) {
+        // AJAX isteği gönderme
+        fetch('/block_device/' + mac, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Device blocked successfully.');
+                // İsteğe bağlı olarak sayfayı yenileyebilir veya tabloyu güncelleyebilirsiniz
+                location.reload();
+            } else {
+                alert('Failed to block device.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while blocking the device.');
+        });
+    }
+
+    function unblockDevice(mac) {
+        // AJAX isteği gönderme
+        fetch('/unblock_device/' + mac, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Device unblocked successfully.');
+                // İsteğe bağlı olarak sayfayı yenileyebilir veya tabloyu güncelleyebilirsiniz
+                location.reload();
+            } else {
+                alert('Failed to unblock device.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while unblocking the device.');
+        });
+    }
+</script>
+    {% if scan_results %}
+    <script>
+        window.addEventListener('load', function() {
+            document.getElementById('scanResultsModal').style.display = 'block';
+        });
+    </script>
+    {% endif %}
+{% endblock %}

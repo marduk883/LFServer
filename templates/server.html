@@ -1,0 +1,487 @@
+{% extends "main.html" %}
+{% block title %}Server{% endblock %}
+{% block body %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        width: 90%;
+        margin: auto;
+        overflow: hidden;
+        padding: 20px;
+        display: flex;
+    }
+
+    /* Sol Filtre Alanı */
+    .filter-section {
+        width: 20%;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-right: 20px;
+    }
+
+    .filter-section h2 {
+        color: #6c63ff;
+        margin-top: 0;
+    }
+
+    .filter-group {
+        margin-bottom: 15px;
+    }
+
+    .filter-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #555;
+    }
+
+    .filter-group input[type="text"],
+    .filter-group input[type="date"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+        margin-bottom: 5px;
+    }
+
+    .filter-group button {
+        background-color: #6c63ff;
+        color: white;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s ease;
+    }
+
+    .filter-group button:hover {
+        background-color: #5650c7;
+    }
+
+    /* Sağ İçerik Alanı */
+    .content-section {
+        width: 80%;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+        color: #6c63ff;
+    }
+
+    .cyber-btn {
+        background-color: #6c63ff;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .cyber-btn:hover {
+        background-color: #5650c7;
+    }
+
+    .upload-area {
+        border: 2px dashed #ccc;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        margin-bottom: 20px;
+    }
+
+    .upload-area.dragover {
+        background-color: #f0f0f0;
+    }
+
+    .upload-form {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .upload-form input[type="file"] {
+        margin-bottom: 10px;
+    }
+
+    /* Tablo Stilleri */
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .file-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .file-table th,
+    .file-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+    }
+
+    .file-table th {
+        background-color: #f0f0f0;
+        color: #333;
+    }
+
+    .file-table tbody tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    /* Progress Bar */
+    #progress-container {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    #progress-bar {
+        width: 80%;
+        height: 20px;
+        border-radius: 10px;
+        background-color: #eee;
+        appearance: none;
+        -webkit-appearance: none;
+    }
+
+    #progress-bar::-webkit-progress-bar {
+        background-color: #eee;
+        border-radius: 10px;
+    }
+
+    #progress-bar::-webkit-progress-value {
+        background-color: #6c63ff;
+        border-radius: 10px;
+    }
+
+    #progress-text {
+        margin-left: 10px;
+        color: #555;
+    }
+
+    /* Filtre Alanı Stilleri */
+    .filter-section {
+        width: 20%;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-right: 20px;
+    }
+
+    .filter-section h2 {
+        color: #6c63ff;
+        margin-top: 0;
+    }
+
+    .filter-group {
+        margin-bottom: 15px;
+        padding: 10px;
+        border: 1px solid #eee;
+        border-radius: 5px;
+    }
+
+    .filter-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #555;
+    }
+
+    .filter-options {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter-option {
+        display: inline-block;
+        margin: 5px;
+    }
+
+    .filter-checkbox {
+        position: relative;
+        width: auto;
+        min-width: 60px;
+        /* Butonun minimum genişliği */
+        height: 25px;
+        /* Butonun yüksekliği */
+        -webkit-appearance: none;
+        background-color: #fff;
+        border: 2px solid #6c63ff;
+        border-radius: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c63ff;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        padding: 0 8px;
+        /* Yazının taşmasını engellemek için */
+        box-sizing: border-box;
+        /* Padding'in genişliği etkilememesi için */
+        text-align: center;
+        /* Yazıyı ortalamak için */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 12px;
+        /* Yazı boyutunu küçült */
+    }
+
+    .filter-checkbox:checked {
+        background-color: #6c63ff;
+        color: white;
+    }
+
+    .filter-checkbox:focus {
+        outline: none;
+    }
+
+    /* Checkbox'ın kendisini gizle */
+    .filter-option input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    /* Checkbox yerine kullanılacak stil */
+    .filter-option label {
+        display: inline-block;
+        position: relative;
+        padding: 6px 12px;
+        /* Padding'i küçült */
+        background-color: #fff;
+        border: 2px solid #6c63ff;
+        border-radius: 20px;
+        color: #6c63ff;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 12px;
+        /* Yazı boyutunu küçült */
+    }
+
+    /* Seçili olduğunda */
+    .filter-option input[type="checkbox"]:checked+label {
+        background-color: #6c63ff;
+        color: white;
+    }
+
+    /* Apply ve Reset butonları için stil */
+    .filter-buttons {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+    }
+
+    .filter-buttons button {
+        background-color: #6c63ff;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .filter-buttons button:hover {
+        background-color: #5650c7;
+    }
+</style>
+
+<div class="container">
+    <!-- Sol Filtre Alanı -->
+    <div class="filter-section">
+        <h2>Filters</h2>
+        <form method="POST" action="{{ url_for('server') }}">
+            <div class="filter-group">
+                <label>Uploaded By:</label>
+                <div class="filter-options">
+                    {% for username in usernames %}
+                    <label class="filter-option">
+                        <input type="checkbox" name="user_filter" id="user_{{ username }}" value="{{ username }}">
+                        <label for="user_{{ username }}">{{ username }}</label>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="filter-group">
+                <label for="date_from">Date From:</label>
+                <input type="date" name="date_from" id="date_from">
+            </div>
+            <div class="filter-group">
+                <label for="date_to">Date To:</label>
+                <input type="date" name="date_to" id="date_to">
+            </div>
+            <div class="filter-group">
+                <label>Extension:</label>
+                <div class="filter-options">
+                    {% for ext in extensions %}
+                    <label class="filter-option">
+                        <input type="checkbox" name="ext_filter" id="ext_{{ ext }}" value="{{ ext }}">
+                        <label for="ext_{{ ext }}">{{ ext.upper() }}</label>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="filter-group">
+                <label for="filename_search">Filename:</label>
+                <input type="text" name="filename_search" id="filename_search" placeholder="Search">
+            </div>
+            <div class="filter-buttons">
+                <button type="submit">Apply Filters</button>
+                <button type="button" onclick="resetFilters()">Reset Filters</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Sağ İçerik Alanı -->
+    <div class="content-section">
+        <h1>Uploaded Files</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <span>{{ session['username'] }}</span>
+                <form action="{{ url_for('cikis') }}" method="POST" style="display: inline;">
+                    <button type="submit" class="cyber-btn">Log Out</button>
+                </form>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table id="all-files-table" class="file-table">
+                <thead>
+                    <tr>
+                        <th>Filename</th>
+                        <th>Uploaded By</th>
+                        <th>Uploaded IP</th>
+                        <th>Upload Date</th>
+                        {% if session.user_type == 'admin' %}
+                        <th>Actions</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for file in files %}
+                    <tr>
+                        <td class="filename">{{ file.filename }}</td>
+                        <td>{{ file.uploaded_by }}</td>
+                        <td>{{ file.uploaded_ip }}</td>
+                        <td>{{ file.upload_date }}</td>
+                        <td>
+                            <a href="{{ url_for('download_file', filename=file.filename) }}" class="cyber-btn">Download</a>
+                            {% if session.user_type == 'admin' %}
+                            <form action="{{ url_for('delete_file', file_id=file.id) }}" method="post"
+                                style="display:inline;">
+                                <button type="submit" class="cyber-btn">Delete</button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="upload-area">
+            <a href="#" id="select-files" class="cyber-btn" style="display: inline-block; text-decoration: none;">Drag & Drop files</a>
+        </div>
+        <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" id="upload-form"
+            class="upload-form">
+            <input type="file" name="files[]" id="file-input" multiple style="display: none;">
+        </form>
+        <div id="progress-container" style="display: none;">
+            <progress id="progress-bar" value="0" max="100"></progress>
+            <span id="progress-text">0%</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    function resetFilters() {
+        window.location.href = "{{ url_for('server') }}";
+    }
+
+    const dropArea = document.querySelector('.upload-area');
+    const fileInput = document.querySelector('#file-input');
+    const selectFilesLink = document.querySelector('#select-files');
+    const uploadForm = document.querySelector('#upload-form');
+
+    // Dosya seçme alanına tıklandığında dosya seçme penceresini aç
+    selectFilesLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        fileInput.click();
+    });
+
+    // Dosya seçme input'unda değişiklik olduğunda formu otomatik olarak gönder
+    fileInput.addEventListener('change', () => {
+        uploadForm.submit();
+    });
+
+    // Sürüklenen dosyaların işlenmesi
+    dropArea.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        dropArea.classList.add('dragover');
+    });
+
+    dropArea.addEventListener('dragleave', () => {
+        dropArea.classList.remove('dragover');
+    });
+
+    dropArea.addEventListener('drop', (event) => {
+        event.preventDefault();
+        dropArea.classList.remove('dragover');
+        fileInput.files = event.dataTransfer.files;
+        uploadForm.submit();
+    });
+
+    document.getElementById('upload-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        var formData = new FormData(this);
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', this.action, true);
+
+        xhr.upload.onprogress = function (event) {
+            if (event.lengthComputable) {
+                var percentComplete = (event.loaded / event.total) * 100;
+                document.getElementById('progress-container').style.display = 'block';
+                document.getElementById('progress-bar').value = percentComplete;
+                document.getElementById('progress-text').textContent = percentComplete.toFixed(2) + '%';
+            }
+        };
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                alert('File successfully uploaded');
+                location.reload();
+            } else {
+                alert('Error uploading file');
+            }
+        };
+
+        xhr.send(formData);
+    });
+</script>
+{% endblock %}

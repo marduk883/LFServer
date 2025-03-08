@@ -1,0 +1,60 @@
+{% extends "main.html" %}
+{% block title %}Register{% endblock %}
+{% block body %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;">
+    {% include "categorys.html"%}
+    <form action="{{ url_for('register') }}" method="POST">
+        <div class="form-group" bis_skin_checked="1">
+            <label for="username"><i class="zmdi zmdi-account material-icons-name"></i></label>
+            <input type="text" name="username" id="username" placeholder="username">
+        </div>
+        <div class="form-group" bis_skin_checked="1">
+            <label for="password"><i class="zmdi zmdi-lock"></i></label>
+            <input type="password" name="password" id="password" placeholder="password">
+        </div>
+        <div class="form-group" bis_skin_checked="1">
+            <label for="confirm_password"><i class="zmdi zmdi-lock"></i></label>
+            <input type="password" name="confirm_password" id="confirm_password" placeholder="confirm password">
+        </div>        
+        <div class="form-group form-button" bis_skin_checked="1">
+            <input type="submit" name="signup" id="signup" class="form-submit" value="register">
+        </div>
+    </form>
+</div>
+
+<style>
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .form-group input {
+        width: 300px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: #6c63ff;
+    }
+
+    .form-submit {
+        background-color: #6c63ff;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 300px;
+    }
+</style>
+{% endblock %}

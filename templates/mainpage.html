@@ -1,0 +1,53 @@
+{% extends "main.html" %}
+{% block title %}Main Page{% endblock %}
+
+{% block body %}
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;">
+    <div style="text-align: center;">
+        {% include "categorys.html"%}
+        <h1 id="current-time" style="font-size: 100px; color: #343a40; margin: 0; padding: 20px 0; font-weight: bold;">
+            {{ current_time }}
+        </h1>
+        <div style="margin-top: 30px;">
+            <a href="{{ url_for('montyhall') }}" class="button">I'm Bored</a>
+            <a href="{{ url_for('server') }}" class="button">Go to Server</a>
+            {% if session.user_type == 'admin' %}
+            <a href="{{ url_for('serversettings') }}" class="button">Server Settings</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .button {
+        display: inline-block;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: none;
+        color: #fff;
+        background-color: #6c63ff;
+        border: none;
+        border-radius: 20px;
+        margin: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+        background-color: #5650c7;
+    }
+</style>
+
+<script>
+    function updateTime() {
+        var now = new Date();
+        var formattedTime = now.toLocaleTimeString('en-GB', { hour12: false });
+        document.getElementById('current-time').textContent = formattedTime;
+    }
+
+    setInterval(updateTime, 1000);
+    updateTime();
+</script>
+{% endblock %}

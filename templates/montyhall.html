@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monty Hall Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .game-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 3em; /* Başlık boyutunu artır */
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 1.5em; /* Paragraf boyutunu artır */
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.8em;
+            background-color: #ffae00;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background-color: #f5b4b4;
+        }
+
+        img {
+            max-width: 150px;
+            height: auto;
+            margin-top: 10px;
+        }
+
+        h2 {
+            color: #333;
+            margin-top: 20px;
+            font-size: 2.5em; /* İkinci başlık boyutunu artır */
+        }
+
+        .statistics-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .statistics-container div {
+            text-align: center;
+        }
+
+        .statistics-container h3 {
+            color: #333;
+            font-size: 2em; /* İstatistik başlık boyutunu artır */
+        }
+
+        .statistics-container img {
+            max-width: 400px; /* Grafik boyutunu artır */
+            height: auto;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 30px;
+            font-size: 1.8em;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        a:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="game-container">
+        <h1>Monty Hall Game</h1>
+        {% if step == 1 %}
+        <p>There are three doors:</p>
+        <form method="post">
+            <p>Select a door:</p>
+            <button type="submit" name="initial_choice" value="1">
+                <img src="https://i.hizliresim.com/b80a8hl.png?_gl=1*nedhzr*_ga*MTMyNDk1OTg3LjE3Mzk0Mzk4MzI.*_ga_M9ZRXYS2YN*MTc0MDE1MzIwMC40LjEuMTc0MDE1MzI1Mi44LjAuMA.."
+                    alt="Door 1" width="150">
+                <p>Door 1</p>
+            </button>
+            <button type="submit" name="initial_choice" value="2">
+                <img src="https://i.hizliresim.com/6ozowiw.png?_gl=1*1fhgao9*_ga*MTMyNDk1OTg3LjE3Mzk0Mzk4MzI.*_ga_M9ZRXYS2YN*MTc0MDE1MzIwMC40LjEuMTc0MDE1MzIzOS4yMS4wLjA."
+                    alt="Door 2" width="150">
+                <p>Door 2</p>
+            </button>
+            <button type="submit" name="initial_choice" value="3">
+                <img src="https://i.hizliresim.com/6motdmd.png?_gl=1*w6rr8n*_ga*MTMyNDk1OTg3LjE3Mzk0Mzk4MzI.*_ga_M9ZRXYS2YN*MTc0MDE1MzIwMC40LjEuMTc0MDE1MzIyMS4zOS4wLjA."
+                    alt="Door 3" width="150">
+                <p>Door 3</p>
+            </button>
+        </form>
+        {% elif step == 2 %}
+        <p>There are three doors:</p>
+        <p>You chose door number: {{ game_data.first_choice }}</p>
+        <p>Monty reveals a goat behind door number: {{ game_data.revealed_door }}</p>
+        <form method="post">
+            <input type="hidden" name="car" value="{{ game_data.car }}">
+            <input type="hidden" name="first_choice" value="{{ game_data.first_choice }}">
+            <input type="hidden" name="revealed_door" value="{{ game_data.revealed_door }}">
+            <input type="hidden" name="remaining_door" value="{{ game_data.remaining_door }}">
+            <p>Do you want to switch to the remaining door?</p>
+            <input type="radio" id="switch_yes" name="switch" value="yes">
+            <label for="switch_yes">Yes</label><br>
+            <input type="radio" id="switch_no" name="switch" value="no">
+            <label for="switch_no">No</label><br>
+            <button type="submit">Submit</button>
+        </form>
+        {% elif step == 3 %}
+        <p>You chose door number: {{ game_data.first_choice }}</p>
+        <p>Monty revealed a goat behind door number: {{ game_data.revealed_door }}</p>
+        {% if game_data.switch == 'yes' %}
+        <p>You switched to door number: {{ game_data.final_choice }}</p>
+        {% else %}
+        <p>You stayed with door number: {{ game_data.final_choice }}</p>
+        {% endif %}
+        <p>The car was behind door number: {{ game_data.car }}</p>
+        {% if game_data.win %}
+        <p>Congratulations! You won the car!</p>
+        <img src="https://i.hizliresim.com/bilh7su.png?_gl=1*5525rx*_ga*MTIxNjM3NDYyMS4xNzQwMTQ5MTgz*_ga_M9ZRXYS2YN*MTc0MDE0OTE4Mi4xLjAuMTc0MDE0OTE4Mi42MC4wLjA."
+            alt="Car" width="150">
+        {% else %}
+        <p>Sorry, you got a goat.</p>
+        <img src="https://i.hizliresim.com/ee7pscp.png?_gl=1*1l5a0r3*_ga*MTIxNjM3NDYyMS4xNzQwMTQ5MTgz*_ga_M9ZRXYS2YN*MTc0MDE0OTE4Mi4xLjEuMTc0MDE0OTE5OC40NC4wLjA."
+            alt="Goat" width="150">
+        {% endif %}
+        <div class="statistics-container">
+            <div>
+                {% if game_data.switch_pie_chart %}
+                <img src="data:image/png;base64,{{ game_data.switch_pie_chart }}" alt="Switch Pie Chart">
+                {% else %}
+                <p>No data available.</p>
+                {% endif %}
+            </div>
+            <div>
+                {% if game_data.stay_pie_chart %}
+                <img src="data:image/png;base64,{{ game_data.stay_pie_chart }}" alt="Stay Pie Chart">
+                {% else %}
+                <p>No data available.</p>
+                {% endif %}
+            </div>
+        </div>
+        <a href="{{ url_for('montyhall') }}">Play again</a>
+        {% endif %}
+    </div>
+</body>
+
+</html>

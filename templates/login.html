@@ -1,0 +1,120 @@
+{% extends "main.html" %}
+{% block title %}login{% endblock %}
+{% block body %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;">
+    {% include "categorys.html"%}
+    <form action="{{ url_for('login') }}" method="POST">
+        <div class="form-group" bis_skin_checked="1">
+            <label for="username"><i class="zmdi zmdi-account material-icons-name"></i></label>
+            <div style="position: relative;">
+                <input type="text" name="username" id="username" placeholder="username" style="padding-right: 40px;">
+                <input type="button" id="enter-button" value="enter" style="display: none; position: absolute; top: 50%; right: 5px; transform: translateY(-50%); background-color: #6c63ff; color: white; border: none; border-radius: 5px; cursor: pointer; height: 30px; font-size: 12px; padding: 5px 10px; width: auto;">
+            </div>
+        </div>
+        <div class="form-group" bis_skin_checked="1" id="password-group" style="display: none;">
+            <label for="password"><i class="zmdi zmdi-lock"></i></label>
+            <div style="position: relative;">
+                <input type="password" name="password" id="password" placeholder="password" style="padding-right: 40px;">
+                <input type="button" id="show-password-button" value="show" style="position: absolute; top: 50%; right: 5px; transform: translateY(-50%); background-color: #6c63ff; color: white; border: none; border-radius: 5px; cursor: pointer; height: 30px; font-size: 12px; padding: 5px 10px; width: auto;">
+            </div>
+        </div>
+        <div class="form-group form-button" bis_skin_checked="1" id="login-button-group" style="display: none;">
+            <input type="submit" name="signin" id="signin" class="form-submit" value="log in">
+        </div>
+    </form>
+</div>
+
+<style>
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .form-group input {
+        width: 300px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: #6c63ff;
+    }
+
+    .form-submit {
+        background-color: #6c63ff;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 300px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var usernameInput = document.getElementById('username');
+        var enterButton = document.getElementById('enter-button');
+        var passwordInput = document.getElementById('password');
+        var showPasswordButton = document.getElementById('show-password-button');
+        var passwordGroup = document.getElementById('password-group');
+        var loginButtonGroup = document.getElementById('login-button-group');
+
+        function checkUsername() {
+            if (usernameInput.value.length >= 3) {
+                enterButton.style.display = 'block';
+            } else {
+                enterButton.style.display = 'none';
+                passwordGroup.style.display = 'none';
+                loginButtonGroup.style.display = 'none';
+            }
+
+            if (passwordGroup.style.display === 'block' && loginButtonGroup.style.display === 'block') {
+                enterButton.style.display = 'none';
+            }
+        }
+
+        usernameInput.addEventListener('input', function() {
+            checkUsername();
+        });
+
+        enterButton.addEventListener('click', function(event) {
+            passwordGroup.style.display = 'block';
+            loginButtonGroup.style.display = 'block';
+            passwordInput.focus();
+            enterButton.style.display = 'none';
+        });
+
+        usernameInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                if (this.value.trim() !== '') {
+                    passwordGroup.style.display = 'block';
+                    loginButtonGroup.style.display = 'block';
+                    passwordInput.focus();
+                    enterButton.style.display = 'none';
+                    event.preventDefault();
+                }
+            }
+        });
+
+        showPasswordButton.addEventListener('click', function() {
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                showPasswordButton.value = "hide";
+            } else {
+                passwordInput.type = "password";
+                showPasswordButton.value = "show";
+            }
+        });
+    });
+</script>
+{% endblock %}
