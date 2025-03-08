@@ -40,6 +40,5 @@ class MontyHallGames(m883lfs.Model):
     def __repr__(self):
         return f'<MontyHallGame {self.id}>'
 
-# Veritabanını oluşturma
 with app.app_context():
     m883lfs.create_all()
